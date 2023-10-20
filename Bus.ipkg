@@ -1,0 +1,7 @@
+package bus
+
+modules = Tests
+        , Language
+        , Bus
+
+depends = prelude, base, contrib
