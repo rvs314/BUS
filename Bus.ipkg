@@ -5,3 +5,5 @@ modules = Tests
         , Bus
 
 depends = prelude, base, contrib
+executable = runTests
+main = Tests

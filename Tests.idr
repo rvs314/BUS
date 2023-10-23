@@ -1,3 +1,4 @@
+module Tests
 
 import Data.Vect
 import Data.SortedMap
@@ -13,23 +14,24 @@ import Language
 
 testI : Vect 4 Integer -> List (String, Vect 4 Integer) -> IO ()
 testI xs ys = 
- do printLn "Free Variables:"
-    traverse_ (\(s, v) => printLn "\{s} => \{show v}") ys
-    printLn "Expected Values:"
-    printLn $ show xs
+ do putStrLn "Free Variables:"
+    traverse_ (\(s, v) => putStrLn "\{s} => \{show v}") ys
+    putStrLn "Expected Values:"
+    putStrLn $ show xs
     let res = bus (limit 10) (Array 4 Math) (SortedMap.fromList ys) xs
-    printLn $ "Generated Code: " ++ show res
+    putStrLn $ "Generated Code: " ++ show res
 
 
 testL : Vect 4 LObj -> List (String, Vect 4 LObj) -> IO ()
 testL xs ys = 
- do printLn "Free Variables:"
-    traverse_ (\(s, v) => printLn "\{s} => \{show v}") ys
-    printLn "Expected Values:"
-    printLn $ show xs
+ do putStrLn "Free Variables:"
+    traverse_ (\(s, v) => putStrLn "\{s} => \{show v}") ys
+    putStrLn "Expected Values:"
+    putStrLn $ show xs
     let res = bus (limit 10) (Array 4 Lists) (SortedMap.fromList ys) xs
-    printLn $ "Generated Code: " ++ show res
+    putStrLn $ "Generated Code: " ++ show res
 
+public export
 main : IO ()
 main = do
   testI [1, 2, 3, 4] [("x", [0, 1, 2, 3])]
