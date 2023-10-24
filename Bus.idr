@@ -49,6 +49,7 @@ initialCorpus l nv =
     lits = map (\c => MkSubterm (Constant c) c) l.constants
     syms : List (Subterm l)
     syms = map (\(k, v) => MkSubterm (Symbol k) v) (SortedMap.toList nv)
+    consts : List (Subterm l)
     consts = lits ++ syms
     denos : SortedMap l.Val (Subterm l)
     denos = SortedMap.fromList $ map (\c => (val c, c)) consts
