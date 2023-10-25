@@ -20,6 +20,7 @@ budget = 10
 synth :: [Integer] -> Maybe String
 synth ks = prettyPrint <$> bus (array 3 math) ienv ks budget
 
+tests :: Test
 tests =
   TestList
     [ "Identity function" ~: synth [1, 2, 3] @?= Just "x",
@@ -32,6 +33,5 @@ tests =
     ]
 
 main :: IO ()
-main = do
-  runTestTT tests
-  putStrLn "Tests finished"
+main = runTestTTAndExit tests
+
