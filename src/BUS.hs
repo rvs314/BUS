@@ -5,6 +5,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe
 import Language
+import Control.Applicative
 
 sums :: Int -> Int -> [[Int]]
 sums 0 0 = [[]]
@@ -64,8 +65,9 @@ grow (Language cs ops) (Corpus size bySize byDeno) =
     nextByDeno = byDeno `Map.union` nextGen
     nextBySize = subtermsOfMap $ nextGen `Map.difference` byDeno
 
-bus :: Ord v => Language v -> Env v -> v -> Term v
-bus lang env val = loop (initialCorpus lang env)
+bus :: Ord v => Language v -> Env v -> v -> Int -> Maybe (Term v)
+bus lang env val fuel = loop (initialCorpus lang env) fuel
   where
-    loop corpus =
-      fromMaybe (loop $ grow lang corpus) (Map.lookup val $ byDeno corpus)
+    loop corpus 0 = Nothing
+    loop corpus fuel =
+      Map.lookup val (byDeno corpus) <|> loop (grow lang corpus) (fuel - 1)

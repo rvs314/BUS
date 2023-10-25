@@ -8,14 +8,13 @@ author:             Raffi Sanna
 maintainer:         rsanna@g.harvard.edu
 
 library
-    exposed-modules:  BUS, Math
+    exposed-modules:  BUS, Math, Array, Language
 
     other-extensions: LambdaCase, TypeFamilies
     build-depends:    base ^>=4.16.4.0,
                       containers >= 0.6.5.1
     hs-source-dirs:   src
     default-language: Haskell2010
-    other-modules:    Language
 
 test-suite bus-test
     default-language: Haskell2010
@@ -25,4 +24,6 @@ test-suite bus-test
     -- hs-source-dirs:
     main-is:          BUSTest.hs
     build-depends:    base ^>=4.16.4.0,
-                      containers >= 0.6.5.1
+                      bus >= 0.1.0.0, 
+                      containers >= 0.6.5.1,
+                      HUnit >= 1.6.2.0

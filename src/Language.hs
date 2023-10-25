@@ -3,8 +3,7 @@ module Language
     Term (..),
     Language (..),
     Env (..),
-    eval,
-    prettyPrint
+    eval
   )
 where
 
@@ -39,12 +38,6 @@ data Term val
   | Constant val
   | Application (Operator val) [Term val]
   deriving (Eq, Ord, Show)
-
-prettyPrint :: Show val => Term val -> String
-prettyPrint (Symbol s) = s
-prettyPrint (Constant c) = show c
-prettyPrint (Application (Operator name _ _) ts) =
-  "(" ++ unwords (name : map prettyPrint ts) ++ ")"
 
 type Env = Map String
 
