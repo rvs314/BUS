@@ -1,7 +1,6 @@
-{-# LANGUAGE LambdaCase #-}
-module Math (math) where
+module BUS.Language.Math (math) where
 
-import Language
+import BUS.Language
 import qualified Data.Map.Strict as Map
 
 math :: Language Integer

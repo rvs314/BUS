@@ -4,7 +4,7 @@ import Control.Monad
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe
-import Language
+import BUS.Language
 import Control.Applicative
 
 sums :: Int -> Int -> [[Int]]
@@ -22,7 +22,6 @@ data Subterm v = Subterm
   { term :: Term v,
     val :: v
   }
-  deriving (Show)
 
 apply :: Operator v -> [Subterm v] -> Maybe (Subterm v)
 apply op@(Operator name arity deno) subterms = do
@@ -42,7 +41,6 @@ data Corpus v = Corpus
     bySize :: [[Subterm v]],
     byDeno :: Map v (Term v)
   }
-  deriving (Show)
 
 initialCorpus :: Ord v => Language v -> Env v -> Corpus v
 initialCorpus lang env = Corpus 0 [subtermsOfMap denos] denos
