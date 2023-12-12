@@ -1,0 +1,4 @@
+[custom.all.bus]
+type = "local"
+path = "."
+ipkg = "Bus.ipkg"

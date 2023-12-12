@@ -22,26 +22,26 @@ ncurry       x [] = x
 ncurry       x (y :: xs) = ncurry (x y) xs
 
 public export
-record Operator Value (arity : Nat) where
+record Operator Value where
   constructor MkOperator
+  arity : Nat
   name : String
   denotation : Vect arity Value -> Maybe Value
 
 public export
-record Language where
+record Language (Value : Type) where
   constructor MkLanguage
-  Val : Type
-  constants : List Val
-  rators : SortedMap String (n ** (Operator Val n))
+  constants : List Value
+  rators : SortedMap String (Operator Value)
 
 public export
 data Term : Type -> Type where
   Symbol : String -> Term t
   Constant : t -> Term t
-  Application : {n : Nat} -> Operator t n -> Vect n (Term t) -> Term t
+  Application : (op : Operator t) -> Vect op.arity (Term t) -> Term t
 
 public export 
-Show (Operator v n) where
+Show (Operator v) where
   show = name
 
 public export
@@ -60,17 +60,17 @@ export
 eval : Env v -> Term v -> Maybe v
 eval env (Symbol str) = lookup str env
 eval env (Constant x) = Just x
-eval env (Application (MkOperator name denotation) xs) = 
+eval env (Application (MkOperator name ar denotation) xs) = 
   do subterms <- sequence $ map (\k => eval env (assert_smaller xs k)) xs
      denotation subterms
 
-operatorsOfArity : (l : Language) -> (n : Nat) -> List (Operator l.Val n)
+operatorsOfArity : (l : Language val) -> (n : Nat) -> List (Operator val)
 operatorsOfArity l n = search (values l.rators)
   where 
-    search : List (ar ** Operator l.Val ar) -> List (Operator l.Val n)
+    search : List (Operator val) -> List (Operator val)
     search [] = []
-    search (((ar ** op)) :: xs) = 
-      case decEq ar n of
+    search (op :: xs) = 
+      case decEq op.arity n of
         (Yes Refl) => op :: search xs
         (No contra) => search xs
 

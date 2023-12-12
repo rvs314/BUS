@@ -24,25 +24,25 @@ sumsOf k = rewrite sym (plusZeroRightNeutral k) in walk k 0
       in  k :: p
 
 partitions : (sm : Nat) -> (n : Nat) -> List (Vect n Nat)
-partitions 0 0 = [[]]
+partitions 0 0 = []
 partitions sm 0 = []
 partitions sm (S 0) = [[sm]]
 partitions sm (S k) = 
-  do (Plus me you) <- sumsOf sm
-     ps <- partitions you k
-     pure $ me :: ps
+  do (Plus head rest) <- sumsOf sm
+     ps <- partitions rest k
+     pure $ head :: ps
 
-record Subterm (l : Language) where
+record Subterm (l : Language v) where
   constructor MkSubterm
-  term : Term l.Val
-  val : l.Val
+  term : Term v
+  val : v
 
-record Corpus (l : Language) where
+record Corpus (l : Language v) where
   constructor MkCorpus
-  byDeno : SortedMap l.Val (Subterm l)
+  byDeno : SortedMap v (Subterm l)
   bySize : List (List (Subterm l))
 
-initialCorpus : (l : Language) -> Ord l.Val => Env l.Val -> Corpus l
+initialCorpus : (l : Language v) -> Ord v => Env v -> Corpus l
 initialCorpus l nv = 
   let 
     lits : List (Subterm l)
@@ -51,12 +51,12 @@ initialCorpus l nv =
     syms = map (\(k, v) => MkSubterm (Symbol k) v) (SortedMap.toList nv)
     consts : List (Subterm l)
     consts = lits ++ syms
-    denos : SortedMap l.Val (Subterm l)
+    denos : SortedMap v (Subterm l)
     denos = SortedMap.fromList $ map (\c => (val c, c)) consts
   in
     MkCorpus denos [consts]
 
-grow : (l : Language) -> Ord l.Val => Corpus l -> Corpus l
+grow : (l : Language v) -> Ord v => Corpus l -> Corpus l
 grow l (MkCorpus byDeno bySize) = 
     let newGen = generate (values l.rators)
         newDenos = SortedMap.fromList $ map (\c => (val c, c)) newGen in
@@ -66,8 +66,8 @@ grow l (MkCorpus byDeno bySize) =
     size = length bySize
     ofSize : Nat -> List (Subterm l)
     ofSize b = join $ toList $ fst <$> indexElem b bySize
-    generate : List (n ** Operator l.Val n) -> List (Subterm l)
-    generate ops = do (arity ** op@(MkOperator _ deno)) <- ops
+    generate : List (Operator v) -> List (Subterm l)
+    generate ops = do op@(MkOperator arity _ deno) <- ops
                       budgets <- partitions (pred size) arity
                       subterms <- sequence $ map ofSize budgets
                       value <- toList $ deno $ map val subterms
@@ -75,8 +75,8 @@ grow l (MkCorpus byDeno bySize) =
                       pure $ MkSubterm (Application op (map term subterms)) value
 
 export
-bus : (f : Fuel) -> (l : Language) -> Ord l.Val => 
-      (nv : Env l.Val) -> (expected : l.Val) -> Maybe (Term l.Val)
+bus : Ord v => (f : Fuel) -> (l : Language v) ->
+      (nv : Env v) -> (expected : v) -> Maybe (Term v)
 bus f l nv ex = term <$> loop f (initialCorpus l nv)
   where
     loop : Fuel -> Corpus l -> Maybe (Subterm l)

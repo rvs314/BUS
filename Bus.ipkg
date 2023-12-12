@@ -4,6 +4,6 @@ modules = Tests
         , Language
         , Bus
 
-depends = prelude, base, contrib
+depends = prelude, base, contrib, elab-util
 executable = runTests
 main = Tests
