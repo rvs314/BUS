@@ -8,7 +8,10 @@
 
 \usepackage{fancyhdr}
 \usepackage{fancyvrb}
-
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{graphicx}
+\usepackage{wrapfig}
 \begin{document}
 
 \title{Bottom-Up Enumerative Synthesis of Recursive Programs using Generalized Folds}
@@ -87,7 +90,7 @@ We expand prior work by performing true bottom-up synthesis on arbitrary data st
 
 \section{Generalized Folds}
 
-Recall the definition of \texttt{List}s and their fold:
+The \texttt{fold} procedure for lists is well-known by functional programmers[4]. However, its application to recursive data-structures (and the ability for such folds to be defined automatically) is not. Recall the definition of \texttt{List}s and their fold:
 
 \begin{verbatim}
 data List a = Cons a (List a)
@@ -103,7 +106,7 @@ foldList onCons onNil = rec
 
 There's a clear correspondence between the parameters of the fold and the constructors in the datatype. For each constructor, the fold takes a procedure which takes the fields of the constructor as arguments and returns a new accumulated value. We essentially define our own interpretation of each constructor, then recursively apply it throughout.
 
- Consider the definition of the following algebraic datatype for representing compound objects:
+Consider the definition of the following algebraic datatype for representing compound objects:
 
 \begin{verbatim}
 data Obj = Zero
@@ -129,6 +132,16 @@ foldObj onZero onSucc onNil onCons = rec
     rec (Cons x y) = onCons (rec x) (rec y)
 \end{Verbatim}
 
+\section{Deriving Folds for Program Synthesis}
+
+These generalized folds are the key to synthesis in Dan. Each program is represented as a fold over the datatype of interest, and each case of the fold is structured as a subproblem which can be solved independently. 
+
+\begin{wrapfigure}{l}{5.5cm}
+\includegraphics[width=0.4\textwidth]{Diagram.pdf}
+\end{wrapfigure}
+
+For each constructor of the datatype being folded over, Dan creates an individual procedure for solving that case of the recursion. The examples are then split up depending on the constructor of the argument. For constructors with recursive fields, the recursive structures are replaced with the result of the recursion on those structures. We then have a set of input-output examples which can be solved by an off-the-shelf bottom-up synthesis algorithm. Finally, each of the generated procedures is joined together into the fold.
+
 \section{Future Work}
 
 Immediate next steps forwards for the Dan project would be expanding the implementation. Currently, it can only generate dynamically typed programs - all terms must be of a single type. This works, but limits the opportunities for pruning possible programs and makes expressing problems in the implementation language awkward. Another major improvement would be expressing new kinds of recursion other than \texttt{fold}, and defining multiple implementations of \texttt{fold} for different datatypes.
@@ -147,6 +160,7 @@ Lastly, Dan needs to be evaluated more thoroughly, both in isolation and compare
   \item Peter-Michael Osera and Steve Zdancewic. 2015. Type and Example Directed Program Synthesis. SIGPLAN Not. 50, 6 (June 2015), 619–630. https://doi.org/10.1145/2813885.2738007
   \item Albarghouthi, Aws and Gulwani, Sumit and Kincaid, Zachary. 2013. Recursive Program Synthesis. Proceedings of the 25th international conference on Computer Aided Verification. CAV'13. https://www.microsoft.com/en-us/research/publication/recursive-program-synthesis/
   \item John K. Feser, Swarat Chaudhuri, and Isil Dillig. 2015. Synthesizing data structure transformations from input-output examples. SIGPLAN Not. 50, 6 (June 2015), 229–239. https://doi.org/10.1145/2813885.2737977
+  \item Jeremy Gibbons and Oege de Moor. 2003. The Fun of Programming. Palgrave. 41-60.
 \end{enumerate}
 \end{document}
 
