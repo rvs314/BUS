@@ -72,7 +72,7 @@ runTests {testRunner} l = traverse_ (testRunner l)
 test : String -> List (Pair String t) -> t -> Test t
 test str xs x = MkTest str (SortedMap.fromList xs) x
 
-mathTests : List (Test (Vect 4 Integer))
+mathTests : List (Test (Vect 4 Nat))
 mathTests = [ test "Identity" [("x", [0, 1, 2, 3])] [0, 1, 2, 3]
             , test "Add 1"    [("x", [0, 1, 2, 3])] [1, 2, 3, 4]
             , test "Double"   [("x", [0, 1, 2, 3])] [0, 2, 4, 6]
@@ -84,7 +84,7 @@ mathTests = [ test "Identity" [("x", [0, 1, 2, 3])] [0, 1, 2, 3]
                               ,("y", [9, 2, 4, 3])] [0, 2, 8, 9]
             ]
 
-recMathTests : List (Test (Vect 5 Integer))
+recMathTests : List (Test (Vect 5 Nat))
 recMathTests = [ test "Fact" [("x", [0, 1, 2, 3, 4])] [1, 1, 2, 6, 26] ]
 
 listTests : List (Test (Vect 4 LObj))

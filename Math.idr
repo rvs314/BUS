@@ -6,16 +6,15 @@ import Data.SortedMap
 import Language  
 
 public export
-Math : Language Integer
+Math : Language Nat
 Math = MkLanguage constants (SortedMap.fromList $ map (\c => (c.name, c)) operators)
   where
-    constants = the (List Integer) [0, 1]
-    binop : String -> (Integer -> Integer -> Integer) -> Operator Integer
+    constants = the (List Nat) [0, 1]
+    binop : String -> (Nat -> Nat -> Nat) -> Operator Nat
     binop nm fn = MkOperator 2 nm $ Just . (ncurry fn)
-    eqInt : Integer -> Integer -> Integer
+    eqInt : Nat -> Nat -> Nat
     eqInt m n = if m == n then 1 else 0
-    ltInt : Integer -> Integer -> Integer
+    ltInt : Nat -> Nat -> Nat
     ltInt m n = if m < n then 1 else 0
-    operators = the (List _) [ (MkOperator 1 "-" $ \[k] => Just (-k))
-                             , binop "+" (+) , binop "*" (*)
+    operators = the (List _) [ binop "+" (+) , binop "*" (*)
                              , binop "<" ltInt , binop "=" eqInt]
