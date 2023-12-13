@@ -16,5 +16,4 @@ Math = MkLanguage constants (SortedMap.fromList $ map (\c => (c.name, c)) operat
     eqInt m n = if m == n then 1 else 0
     ltInt : Nat -> Nat -> Nat
     ltInt m n = if m < n then 1 else 0
-    operators = the (List _) [ binop "+" (+) , binop "*" (*)
-                             , binop "<" ltInt , binop "=" eqInt]
+    operators = the (List _) [ binop "+" (+) , binop "<" ltInt , binop "=" eqInt]

@@ -7,11 +7,14 @@ import Data.Either
 import Data.String
 import Bus
 import Math
+import Expr
 import String
 import Lists
 import Array
 import Scheme
 import Language
+import Folds
+import Dan
 
 record Test (Value : Type) where
   constructor MkTest
@@ -80,12 +83,7 @@ mathTests = [ test "Identity" [("x", [0, 1, 2, 3])] [0, 1, 2, 3]
             , test "Const 4"  [("x", [0, 1, 2, 3])] [4, 4, 4, 4]
             , test "Add"      [("x", [0, 1, 2, 3])
                               ,("y", [9, 2, 4, 3])] [9, 3, 6, 6]
-            , test "Multiply" [("x", [0, 1, 2, 3])
-                              ,("y", [9, 2, 4, 3])] [0, 2, 8, 9]
             ]
-
-recMathTests : List (Test (Vect 5 Nat))
-recMathTests = [ test "Fact" [("x", [0, 1, 2, 3, 4])] [1, 1, 2, 6, 26] ]
 
 listTests : List (Test (Vect 4 LObj))
 listTests = [ test "Identity" [("x", [Const 1, Nil, Cons Nil (Const 2), Cons Nil Nil])] 
@@ -105,6 +103,22 @@ schemeTests = [ test "Dup" [("x", [Nil, 'B', ConsPair 'B' Nil, ConsPair Nil Car]
                 , ConsPair (ConsPair Nil Car) (ConsPair Nil Car)]
               ]
 
+recMathTests : List (String, List (Nat, Nat))
+recMathTests = [("double" ,
+                 [ (0, 0)
+                 , (1, 2)
+                 , (2, 4)
+                 , (3, 8)
+                 , (4, 16) ])]
+
+recExprTest : List (Expr, Expr)
+recExprTest = [ (Zero, Zero) , (Succ Zero, Succ Zero) , 
+                (Succ (Succ Zero), Succ (Succ Zero)) , 
+                ((Plus (Succ Zero) (Succ (Succ Zero))), Succ (Succ (Succ Zero))) , 
+                ((Plus Zero (Succ (Succ Zero))), Succ (Succ Zero)) , 
+                ((Minus (Succ (Succ Zero)) (Succ (Succ Zero))), Zero) , 
+                ((Minus (Succ (Succ Zero)) (Succ Zero)), Succ Zero) ]
+
 public export
 main : IO ()
 main = do
@@ -114,8 +128,12 @@ main = do
   runTests (Array 4 Lists) listTests
   putStrLn "Scheme Tests"
   runTests (Array 4 Scheme) schemeTests
-  putStrLn "Recursive Tests"
-  runTests (Array _ Math) recMathTests
+  putStrLn "DAN Tests:"
+  for_ recMathTests (\(name, io) => do putStrLn "Test \{name}"
+                                       printLn $ dan (limit 5) Math io natView )
+  putStrLn "Simple evaluator"
+  printLn $ dan (limit 5) ExprLang recExprTest exprView
+
 --   test Math  [1, 2, 3, 4] [("x", [0, 1, 2, 3])]
 --   test Math  [2, 4, 6, 8] [("x", [2, 4, 6, 8])]
 --   test Math  [3, 6, 9, 12] [("x", [2, 4, 6, 8]), ("y", [3, 2, 3, 4])]
